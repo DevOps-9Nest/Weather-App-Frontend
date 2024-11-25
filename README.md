@@ -42,3 +42,6 @@ Environment Variables
 2. Check Frontend
 https://domain.com
 
+Expected Output Frontend
+![image](https://github.com/user-attachments/assets/c4b8ed0c-5a42-4f3d-8c56-bfca4ae2e925)
+
