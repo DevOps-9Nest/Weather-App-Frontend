@@ -1,12 +1,18 @@
-name: Build
+name: Build, Push, and Deploy
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+
+env:
+  ACR_NAME: devops9nestcandidate      
+  IMAGE_NAME: weather-frontend
+  TAG: latest
+  RESOURCE_GROUP: rg-devops-candidate
+  AKS_CLUSTER: DevOps-Candidate
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,17 +20,31 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build Docker image
-      run: docker build -t weather-frontend:dev .
+      run: docker build -t ${{ env.IMAGE_NAME }}:${{ env.TAG }} .
 
-    - name: Log in to Azure Container Registry
+    - name: Login to Azure Container Registry
       uses: azure/docker-login@v1
       with:
-        login-server: devops9nestcandidate.azurecr.io
-        username: devops9nestcandidate
-        password: 3y06K395LOQQ1TywBf1JV0VUicrgIbdbCq/8ZPw83y+ACRDG3yfh
-
-    - name: Tag Image
-      run: docker tag weather-frontend:dev devops9nestcandidate.azurecr.io/weather-frontend:dev
+        login-server: ${{ env.ACR_NAME }}.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
 
     - name: Push Docker image
-      run: docker push devops9nestcandidate.azurecr.io/weather-frontend:dev
+      run: |
+        docker tag ${{ env.IMAGE_NAME }}:${{ env.TAG }} ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ env.TAG }}
+        docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ env.TAG }}
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CRED }}
+
+    - name: Get AKS credentials
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: ${{ env.RESOURCE_GROUP }}
+        cluster-name: ${{ env.AKS_CLUSTER }}
+
+    - name: Deploy to AKS
+      run: |
+        kubectl apply -f k8s/
