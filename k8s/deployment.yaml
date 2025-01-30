@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-app-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: weather-app-frontend
+  template:
+    metadata:
+      labels:
+        app: weather-app-frontend
+    spec:
+      containers:
+      - name: weather-app-frontend
+        image: devops9nestcandidate.azurecr.io/weather-frontend:latest
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
+      imagePullSecrets:
+      - name: acr-secret
