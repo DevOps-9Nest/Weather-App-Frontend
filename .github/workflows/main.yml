@@ -13,14 +13,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18'
-
-    - name: Install dependencies
-      run: npm install
-
     - name: Build Docker image
       run: docker build -t weather-frontend:dev .
 
@@ -30,6 +22,9 @@ jobs:
         login-server: devops9nestcandidate.azurecr.io
         username: devops9nestcandidate
         password: 3y06K395LOQQ1TywBf1JV0VUicrgIbdbCq/8ZPw83y+ACRDG3yfh
+
+    - name: Tag Image
+      run: docker tag weather-frontend:dev devops9nestcandidate.azurecr.io/weather-frontend:dev
 
     - name: Push Docker image
       run: docker push devops9nestcandidate.azurecr.io/weather-frontend:dev
