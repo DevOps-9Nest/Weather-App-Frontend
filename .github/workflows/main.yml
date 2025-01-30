@@ -28,8 +28,8 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: devops9nestcandidate.azurecr.io
-        username: ${{ secrets.devops9nestcandidate }}
-        password: ${{ secrets.3y06K395LOQQ1TywBf1JV0VUicrgIbdbCq/8ZPw83y+ACRDG3yfh }}
+        username: devops9nestcandidate
+        password: 3y06K395LOQQ1TywBf1JV0VUicrgIbdbCq/8ZPw83y+ACRDG3yfh
 
     - name: Push Docker image
       run: docker push devops9nestcandidate.azurecr.io/weather-frontend:dev
